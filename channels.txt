@@ -1,0 +1,18 @@
+# Каналы, которые нужно отслеживать. По одному в строке.
+# Можно вставлять ссылку на канал целиком, @имя или ID (UC...).
+# Если в файле есть хотя бы один канал, отслеживаются ТОЛЬКО каналы из этого списка.
+# Строки, начинающиеся с #, программа пропускает.
+#
+# Примеры:
+# https://www.youtube.com/@SomeSleepChannel
+# @AnotherChannel
+
+https://youtube.com/channel/UCWabH7QCTDkSDMWuISVXo9w?si=C1iMwkhBYwO9qimB
+@самаятихаяистория
+@КАФЕДРА-ЛекцииДляСна
+https://www.youtube.com/@EarthHistory91
+@тёплоеокно
+https://www.youtube.com/@tihaya-jizn
+https://www.youtube.com/@EarthHistory91/videos
+@ПодТёплымОдеялом-сон
+@истории_для_сна

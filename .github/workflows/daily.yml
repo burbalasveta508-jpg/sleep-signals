@@ -1,0 +1,60 @@
+# Ежедневное обновление базы и публикация отчёта на GitHub Pages (бесплатно).
+# База хранится не в истории репозитория, а в релизе «db» (файл signals.db.gz) и
+# каждый день перезаписывается — так репозиторий не разрастается.
+name: daily-update
+on:
+  schedule:
+    - cron: "17 3 * * *"      # каждый день в 03:17 UTC (05:17 по Варшаве)
+  workflow_dispatch: {}       # кнопка «Run workflow» для ручного запуска
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: daily-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Установить распознавание лиц на обложках
+        run: pip install opencv-python-headless
+      - name: Скачать базу из релиза (если уже есть)
+        run: |
+          mkdir -p data
+          if gh release download db --pattern signals.db.gz --dir data --clobber; then
+            gunzip -f data/signals.db.gz
+            echo "База скачана из релиза"
+          else
+            echo "Релиза ещё нет — используется база из репозитория (или создаётся новая)"
+          fi
+      - name: Обновить статистику, сигналы и отчёт
+        env:
+          YT_API_KEY: ${{ secrets.YT_API_KEY }}
+        run: |
+          python signals.py update
+          python signals.py stats
+      - name: Сохранить базу в релиз
+        run: |
+          gzip -kf data/signals.db
+          gh release upload db data/signals.db.gz --clobber || \
+            gh release create db data/signals.db.gz --title "База данных" \
+              --notes "Служебный релиз: здесь хранится база сигналов. Не удаляйте."
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: report
+      - id: deploy
+        uses: actions/deploy-pages@v4

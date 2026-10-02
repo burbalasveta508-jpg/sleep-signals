@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сигналы — лекции для сна</title>
+<style>
+:root{--bg:#101114;--panel:#17181c;--panel2:#1e2025;--line:#2b2d33;--text:#eceef2;--mut:#8d929c;--dim:#61656e;
+--acc:#c9e265;--accbg:#2a3115;--act:#ec6f9f;--exc:#e9c46a;--ever:#7fd4a8;--good:#8bd66b;--bad:#ef6b6b;--warn:#e9c46a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+button,select,input{font:inherit;color:inherit}
+a{color:inherit}
+a.btn{text-decoration:none;display:inline-block}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 16px 60px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.mut{color:var(--mut)} .dim{color:var(--dim)} .small{font-size:12px}
+h1{font-size:26px;margin:0;line-height:1.1}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:#3a3d45}
+.btn.on{background:var(--accbg);border-color:#56631f;color:var(--acc)}
+.sel{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;min-width:0}
+.lbl{font-size:12px;color:var(--mut);margin-bottom:6px;display:block}
+.search{flex:1;min-width:220px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.head{display:grid;grid-template-columns:auto auto 1fr auto;gap:12px;align-items:end}
+.stats{display:flex;gap:6px 16px;flex-wrap:wrap;align-items:baseline;padding:16px 0 4px;border-top:1px solid var(--line);margin-top:16px}
+.stat{cursor:pointer;color:var(--mut);border-bottom:2px solid transparent;padding-bottom:3px;background:none;border-top:0;border-left:0;border-right:0}
+.stat b{font-size:17px;margin-left:6px;color:var(--text)}
+.stat.on{color:var(--text);border-bottom-color:var(--acc)}
+.stat.a b{color:var(--act)} .stat.e b{color:var(--exc)} .stat.ae b{color:var(--acc)} .stat.g b{color:var(--ever)}
+.seg{display:inline-flex;gap:4px;align-items:center}
+.seg button{background:none;border:1px solid transparent;border-radius:8px;padding:6px 10px;cursor:pointer;color:var(--mut)}
+.seg button.on{background:var(--panel2);border-color:var(--line);color:var(--text)}
+.filters{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;margin-top:14px}
+.filters .sel{width:100%}
+.cats{margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.cats .chips{display:none;margin-top:10px;gap:8px;flex-wrap:wrap}
+.cats.open .chips{display:flex}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer;font-size:12px}
+.chip.on{background:var(--accbg);border-color:#56631f;color:var(--acc)}
+.chip .x{margin-left:6px;color:var(--mut)}
+.active{margin:14px 0 6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px}
+.top{display:grid;grid-template-columns:44px 176px minmax(0,1fr);gap:14px}
+.rank{text-align:center;color:var(--mut);font-size:11px}
+.rank b{display:block;font-size:20px;color:var(--text)}
+.rank .up{color:var(--good);font-size:11px;margin-top:4px}
+.thumb{width:176px;aspect-ratio:16/9;border-radius:10px;object-fit:cover;background:var(--panel2);display:block}
+.title{font-weight:650;font-size:16px;text-decoration:none;line-height:1.3}
+.title:hover{text-decoration:underline}
+.orig{color:var(--mut);font-size:12px;margin-top:3px}
+.meta{margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--mut)}
+.meta .chn{color:var(--text);font-weight:600;text-decoration:none}
+.bdg{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--line);white-space:nowrap}
+.bdg.a{color:var(--act);border-color:#5b2a3f} .bdg.e{color:var(--exc);border-color:#5b4a22} .bdg.g{color:var(--ever);border-color:#28503d}
+.bdg.new{color:var(--acc);border-color:#56631f}
+.bdg.up{color:var(--good);border-color:#2f5a22;background:#18240f}.bdg.down{color:var(--bad);border-color:#5a2626}.bdg.flat{color:var(--mut)}
+.stat.up b{color:var(--good)}
+.blocks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
+.blk{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px}
+.blk h4{margin:0 0 8px;font-size:12px;font-weight:600;display:flex;justify-content:space-between}
+.blk h4.g{color:var(--good)}
+.kv{display:flex;justify-content:space-between;gap:8px;padding:2px 0;color:var(--mut)}
+.kv.mk{display:grid;grid-template-columns:28px 1fr auto;border-radius:6px}
+.kv b{color:var(--text);font-weight:600;font-size:13px}
+.kv b.pos{color:var(--good)} .kv b.neg{color:var(--bad)}
+.mk{cursor:pointer}
+.mk:hover{background:#23262c}
+.st-free{color:var(--good)} .st-partial{color:var(--warn)} .st-busy{color:var(--bad)} .st-none{color:var(--dim)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:middle}
+.chart{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;position:relative;align-self:start}
+.chart .hd{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
+.chart svg{display:block;width:100%;height:150px;margin-top:6px}
+.like{position:absolute;right:0;top:-2px;background:none;border:1px solid var(--line);border-radius:8px;cursor:pointer;padding:3px 8px;font-size:14px;color:var(--mut)}
+.like.on{color:var(--act);border-color:#5b2a3f}
+.reason{display:inline-block;font-size:11px;padding:3px 9px;border-radius:6px;background:#272a30;border:1px solid var(--line);margin-bottom:6px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:12px}
+.cov{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative}
+.cov img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--panel2)}
+.cov .vph{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.75);border-radius:6px;padding:2px 7px;font-size:12px;font-weight:600}
+.cov .like{top:8px;right:8px;background:rgba(0,0,0,.6)}
+.cov .ct{padding:8px 10px;font-size:12px;line-height:1.35}
+.more{display:block;margin:18px auto 0}
+.empty{padding:40px;text-align:center;color:var(--mut)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mut);font-weight:500;font-size:12px;cursor:pointer;user-select:none}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+.pos{color:var(--good)}
+.tblwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-top:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:10}
+.modal.open{display:flex}
+.mbox{background:var(--panel);border:1px solid var(--line);border-radius:18px;max-width:1100px;width:100%;padding:22px}
+.mbox h2{margin:0;font-size:22px}
+.mtabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+.mtab{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left}
+.mtab.on{border-color:var(--acc);background:#1f2316}
+.mtab b{display:block;margin-bottom:4px}
+.mrow{display:grid;grid-template-columns:minmax(0,1fr) 90px 110px 110px 80px;gap:10px;align-items:center;padding:10px 12px;border-top:1px solid var(--line)}
+.mrow.src{background:#1f2316;border-left:3px solid var(--acc);border-radius:8px}
+.mrow .num{text-align:right}
+.mhead{color:var(--mut);font-size:12px}
+.x{cursor:pointer}
+.help{display:none;margin-top:14px;font-size:13px;color:var(--mut);line-height:1.6}
+.help.open{display:block}
+@media(max-width:1000px){.mtabs{grid-template-columns:repeat(2,1fr)}.card{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.head{grid-template-columns:1fr}}
+@media(max-width:640px){.top{grid-template-columns:1fr}.rank{text-align:left;display:flex;gap:8px;align-items:baseline}.rank b{display:inline}.thumb{width:100%}.blocks{grid-template-columns:1fr}.mtabs{grid-template-columns:1fr}.mrow{grid-template-columns:1fr 70px 80px}.mrow .hide-s{display:none}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="box">
+    <div class="head">
+      <div><h1>Сигналы</h1><div class="small mut" id="edcount"></div></div>
+      <div><span class="lbl">Подборка</span><select class="sel" id="ed"></select></div>
+      <div class="row">
+        <button class="btn" id="likesBtn">♡ Понравившиеся</button>
+        <button class="btn" id="covBtn">Обложки</button>
+        <button class="btn" id="chBtn">Каналы</button>
+      </div>
+      <div class="small mut" style="text-align:right">Обновлено<br><span id="upd"></span></div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <input class="search" id="q" placeholder="Название, перевод, канал или тема">
+      <button class="btn" id="helpBtn">ⓘ Как пользоваться сигналами</button>
+    </div>
+    <div class="help" id="help"></div>
+    <div class="stats" id="stats"></div>
+    <div class="row" style="justify-content:space-between;margin-top:10px">
+      <div class="seg"><span class="small mut" style="margin-right:6px">Показатели</span>
+        <button data-m="ed" class="on">На дату подборки</button><button data-m="last">Последние замеры</button></div>
+      <div class="small mut" id="mnote"></div>
+    </div>
+    <div class="filters">
+      <div><span class="lbl">Кто в кадре</span><select class="sel" id="f_face">
+        <option value="">Любой формат</option><option value="1">С лицом на обложке</option><option value="0">Без лица</option></select></div>
+      <div><span class="lbl">Свободный рынок</span><select class="sel" id="f_mk">
+        <option value="">Не важно</option><option value="any">Свободен хотя бы на 1 языке</option>
+        <option value="all">Свободен на всех языках</option><option value="none">Ещё не проверено</option></select></div>
+      <div><span class="lbl">Почему видео в подборке</span><select class="sel" id="f_why">
+        <option value="all">Все сигналы</option><option value="every">Сигналы + топ по VPH</option><option value="a">Активация</option><option value="e">Превышение</option>
+        <option value="ae">Активация + превышение</option><option value="g">Вечнозелёные</option><option value="t">Просто топ по VPH</option></select></div>
+      <div><span class="lbl">Когда нашли сигнал</span><select class="sel" id="f_when">
+        <option value="all">Все в этой подборке</option><option value="0">Новые в этой подборке</option>
+        <option value="2">За последние 3 дня</option><option value="6">За последние 7 дней</option><option value="old">Раньше 7 дней</option></select></div>
+      <div><span class="lbl">Динамика</span><select class="sel" id="f_tr">
+        <option value="">Любая</option><option value="up">↗ Разгоняются</option><option value="flat">→ Стабильно</option><option value="down">↘ Затухают</option></select></div>
+      <div><span class="lbl">Язык ролика</span><select class="sel" id="f_lang"><option value="">Все языки</option></select></div>
+      <div><span class="lbl">Сортировка</span><select class="sel" id="f_sort">
+        <option value="vph">По VPH: сначала быстрые</option><option value="tx">По разгону (сейчас ÷ средний)</option><option value="gx">По росту в разах</option>
+        <option value="ex">По превышению над каналом</option><option value="views">По просмотрам</option>
+        <option value="pub">Сначала новые видео</option><option value="fs">Сначала свежие сигналы</option></select></div>
+    </div>
+    <div class="cats" id="cats">
+      <div class="row x" id="catsHead" style="justify-content:space-between"><span><b>Темы</b> <span class="small mut" id="catsSel">Все темы</span></span><span class="small mut">Развернуть ▾</span></div>
+      <div class="chips" id="catChips"></div>
+    </div>
+  </div>
+
+  <div class="row active" id="active"></div>
+  <div class="small mut" id="found"></div>
+  <div id="list"></div>
+  <button class="btn more" id="more">Показать ещё</button>
+</div>
+
+<div class="modal" id="modal"><div class="mbox" id="mbox"></div></div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const V = DATA.videos, EDS = DATA.editions, CFG = DATA.cfg;
+const LN = {ru:'Русский',en:'Английский',de:'Немецкий',es:'Испанский',fr:'Французский',pl:'Польский',it:'Итальянский',pt:'Португальский',uk:'Украинский',tr:'Турецкий',ja:'Японский',ko:'Корейский',hi:'Хинди',ar:'Арабский'};
+const ST = {free:'Свободен',partial:'Частично свободен',busy:'Занят'};
+const $ = id => document.getElementById(id);
+const fmt = n => n==null ? '—' : Math.round(n).toLocaleString('ru-RU');
+const fmtK = n => n==null ? '—' : n>=1e6 ? (n/1e6).toFixed(1).replace('.0','')+'M' : n>=1e3 ? (n/1e3).toFixed(1).replace('.0','')+'K' : String(Math.round(n));
+const esc = s => String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dstr = ts => new Date(ts*1000).toLocaleDateString('ru-RU');
+const ddiff = (a,b) => Math.round((Date.parse(a)-Date.parse(b))/864e5);
+const dRu = s => s ? s.split('-').reverse().join('.') : '—';
+const ytSearch = (q) => 'https://www.youtube.com/results?search_query='+encodeURIComponent(q);
+
+let likes = new Set();
+try { likes = new Set(JSON.parse(localStorage.getItem('ss_likes')||'[]')); } catch(e) {}
+const saveLikes = () => { try { localStorage.setItem('ss_likes', JSON.stringify([...likes])); } catch(e) {} };
+
+const S = {ed:0, mode:'ed', view:'list', tab:'sig', likes:false, q:'', face:'', mk:'', why:'all', when:'all', lang:'', tr:'', sort:'vph', cats:new Set(), page:1};
+const PAGE = 20;
+
+// ---------- шапка
+$('upd').textContent = DATA.updated;
+$('ed').innerHTML = EDS.map((e,i)=>`<option value="${i}">${dRu(e.date)} · ${e.rows.filter(r=>r.a||r.e||r.g).length}</option>`).join('') || '<option>нет данных</option>';
+const langs = [...new Set(Object.values(V).map(v=>v.lang).filter(Boolean))].sort();
+$('f_lang').insertAdjacentHTML('beforeend', langs.map(l=>`<option value="${l}">${LN[l]||l.toUpperCase()}</option>`).join(''));
+$('catChips').innerHTML = DATA.cats.map((c,i)=>`<span class="chip" data-c="${i}">${esc(c)}</span>`).join('');
+$('help').innerHTML = `<b>Активация</b> — видео старше ${CFG.activation_min_age_days} дн., которое вдруг ускорилось: VPH ≥ ×${CFG.activation_mult} от своего обычного (медиана за ${CFG.baseline_days} дн.).<br>
+<b>Превышение</b> — видео младше ${CFG.exceed_max_age_days} дн., набравшее ≥ ×${CFG.exceed_mult} просмотров от медианного видео своего канала.<br>
+<b>Вечнозелёные</b> — видео старше ${CFG.evergreen_min_age_days} дн., которые стабильно набирают ≥ ${CFG.evergreen_min_vph} просмотров в час.<br>
+<b>VPH</b> — просмотры в час между двумя последними замерами. <b>Подборка</b> — выпуск сигналов на конкретный день; «Последние замеры» показывают свежие цифры для старых подборок.<br>
+<b>Свободный рынок</b> — название переведено на другой язык и найдено на YouTube; «Свободен» — похожих названий почти нет. Сходство — совпадение слов, не оценка содержания.<br>
+<b>Динамика</b> — скорость сейчас ÷ средняя скорость за всю жизнь видео: ↗ Разгоняется (≥ ×${CFG.trend_up}), → Стабильно, ↘ Затухает (≤ ×${CFG.trend_down}). Работает со 2-го замера, для видео старше ${CFG.trend_min_age_days} дн. Пока нет ${CFG.baseline_days} дней истории, «Обычный темп» = средний за жизнь.<br>
+<b>Кто в кадре</b> — автоматический поиск лица на обложке, иногда ошибается на рисунках. <b>♡</b> — избранное, хранится в этом браузере.`;
+
+// ---------- данные выбранной подборки
+function edRows(){ return (EDS[S.ed]||{rows:[]}).rows; }
+function edDate(){ return (EDS[S.ed]||{}).date; }
+function M(r){ const v=V[r.id]; return S.mode==='last' && v && v.now ? v.now : r; }
+function isSig(r){ return r.a||r.e||r.g; }
+function isNew(r){ const v=V[r.id]; return isSig(r) && v && v.fs===edDate(); }
+function langsFor(v){ return DATA.langs; }
+function mkStatus(v){ const ls=langsFor(v); return ls.map(l=>(v.m||{})[l]?.st); }
+
+function passes(r, skip){
+  const v=V[r.id]; if(!v) return false;
+  if(S.likes && !likes.has(r.id)) return false;
+  if(skip!=='why'){
+    if(S.why==='all'&&!isSig(r)) return false;
+    if(S.why==='a'&&!r.a) return false; if(S.why==='e'&&!r.e) return false;
+    if(S.why==='ae'&&!(r.a&&r.e)) return false; if(S.why==='g'&&!r.g) return false; if(S.why==='t'&&!r.t) return false;
+  }
+  if(skip!=='when' && S.when!=='all'){
+    if(!v.fs || !isSig(r)) return false;
+    const d=ddiff(edDate(), v.fs);
+    if(S.when==='old' ? d<7 : d>+S.when) return false;
+  }
+  if(S.face!=='' && String(v.face)!==S.face) return false;
+  if(S.lang && v.lang!==S.lang) return false;
+  if(S.tr && M(r).tr!==S.tr) return false;
+  if(S.mk){ const st=mkStatus(v);
+    if(S.mk==='none' && st.some(Boolean)) return false;
+    if(S.mk==='any' && !st.includes('free')) return false;
+    if(S.mk==='all' && !(st.length && st.every(x=>x==='free'))) return false; }
+  if(S.cats.size && !v.cats.some(c=>S.cats.has(c))) return false;
+  if(S.q){ const t=(v.t+' '+(v.tr||'')+' '+(v.ch||'')+' '+v.cats.map(c=>DATA.cats[c]).join(' ')).toLowerCase(); if(!t.includes(S.q)) return false; }
+  return true;
+}
+
+function sorted(rows){
+  const k={tx:r=>M(r).tx??-1, vph:r=>M(r).vph??-1, gx:r=>M(r).gx??-1, ex:r=>M(r).ex??-1, views:r=>M(r).views??-1,
+           pub:r=>V[r.id].pub, fs:r=>Date.parse(V[r.id].fs||'1970-01-01')}[S.sort];
+  return rows.slice().sort((a,b)=>k(b)-k(a));
+}
+
+// ---------- счётчики
+function renderStats(){
+  const rows=edRows().filter(r=>isSig(r)&&passes(r,'why'));
+  const c={a:0,e:0,ae:0,g:0,n:0,up:0}; const L=new Set(); let mx=0;
+  rows.forEach(r=>{ if(r.a)c.a++; if(r.e)c.e++; if(r.a&&r.e)c.ae++; if(r.g)c.g++; if(isNew(r))c.n++; if(M(r).tr==='up')c.up++;
+    const v=V[r.id]; if(v&&v.lang)L.add(v.lang); mx=Math.max(mx,M(r).vph||0); });
+  const it=(k,l,n,cls)=>`<button class="stat ${cls} ${S.why===k?'on':''}" data-w="${k}">${l}<b>${fmt(n)}</b></button>`;
+  $('stats').innerHTML = it('a','Активация',c.a,'a')+it('e','Превышение',c.e,'e')+it('ae','Активация + превышение',c.ae,'ae')+it('g','Вечнозелёные',c.g,'g')
+    + `<button class="stat up ${S.tr==='up'?'on':''}" data-tr="1">↗ Разгоняются<b>${c.up}</b></button>`
+    + `<span class="dim">|</span><button class="stat ${S.when==='0'?'on':''}" data-new="1">Новые сигналы<b>${c.n}</b></button>`
+    + `<span class="stat" style="cursor:default">Языков<b>${L.size}</b></span>`
+    + `<span class="stat" style="margin-left:auto;cursor:default">Макс. просмотров/ч<b>${fmt(mx)}</b></span>`;
+  $('stats').querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{S.why=S.why===b.dataset.w?'all':b.dataset.w; $('f_why').value=S.why; go();});
+  $('stats').querySelector('[data-tr]').onclick=()=>{S.tr=S.tr==='up'?'':'up'; $('f_tr').value=S.tr; go();};
+  $('stats').querySelector('[data-new]').onclick=()=>{S.when=S.when==='0'?'all':'0'; $('f_when').value=S.when; go();};
+  $('edcount').textContent = `${edRows().filter(isSig).length} сигналов в выпуске`;
+  $('mnote').textContent = S.mode==='ed' ? `Показатели на дату подборки · ${dRu(edDate())}` : `Показатели по последнему замеру · ${DATA.updated}`;
+}
+
+// ---------- активные фильтры
+function renderActive(){
+  const ch=[], sel=(id)=>$(id).options[$(id).selectedIndex].text;
+  if(S.why!=='all'&&S.why!=='every') ch.push(['why','Только: '+sel('f_why').toLowerCase()]);
+  if(S.when!=='all') ch.push(['when',sel('f_when')]);
+  if(S.face!=='') ch.push(['face',sel('f_face')]);
+  if(S.mk) ch.push(['mk',sel('f_mk')]);
+  if(S.lang) ch.push(['lang',sel('f_lang')]);
+  if(S.tr) ch.push(['tr',sel('f_tr')]);
+  S.cats.forEach(c=>ch.push(['cat:'+c,DATA.cats[c]]));
+  if(S.likes) ch.push(['likes','♡ Понравившиеся']);
+  if(S.q) ch.push(['q','Поиск: '+S.q]);
+  $('active').innerHTML = ch.length ? '<span class="small mut">Фильтры</span>'+ch.map(([k,l])=>`<span class="chip on" data-k="${k}">${esc(l)}<span class="x">×</span></span>`).join('')+'<span class="chip x" id="reset">Сбросить всё</span>' : '';
+  $('active').querySelectorAll('[data-k]').forEach(c=>c.onclick=()=>{const k=c.dataset.k;
+    if(k==='why'){S.why='all';$('f_why').value='all';} else if(k==='when'){S.when='all';$('f_when').value='all';}
+    else if(k==='face'){S.face='';$('f_face').value='';} else if(k==='mk'){S.mk='';$('f_mk').value='';}
+    else if(k==='lang'){S.lang='';$('f_lang').value='';} else if(k==='tr'){S.tr='';$('f_tr').value='';} else if(k==='likes'){S.likes=false;}
+    else if(k==='q'){S.q='';$('q').value='';} else if(k.startsWith('cat:')){S.cats.delete(+k.slice(4));}
+    go();});
+  const r=$('reset'); if(r) r.onclick=resetAll;
+}
+function resetAll(){ Object.assign(S,{likes:false,q:'',face:'',mk:'',why:'all',when:'all',lang:'',tr:'',cats:new Set()});
+  ['f_face','f_mk','f_lang','f_tr'].forEach(i=>$(i).value=''); $('f_why').value='all'; $('f_when').value='all'; $('q').value=''; go(); }
+
+// ---------- график VPH
+function niceMax(x){ if(x<=0) return 1; const p=Math.pow(10,Math.floor(Math.log10(x))), f=x/p;
+  return (f<=1?1:f<=1.5?1.5:f<=2?2:f<=3?3:f<=5?5:10)*p; }
+function chart(v, r){
+  if(!v.s || !v.s.v.length) return `<div class="small dim" style="padding:60px 0;text-align:center">скорость появится после 2-го замера</div>`;
+  const T=v.s.t, vals=v.s.v, n=vals.length, W=340, H=190, pl=30, pr=14, pt=26, pb=22;
+  const top=niceMax(Math.max(...vals)), k=top>=1000, u=x=>k?(x/1000).toLocaleString('ru-RU',{maximumFractionDigits:1}):fmt(x);
+  const t0=T[0], t1=T[n-1];
+  const X=i=> n===1 ? (pl+W-pr)/2 : pl+(T[i]-t0)/(t1-t0||1)*(W-pl-pr), Y=val=>pt+(1-val/top)*(H-pt-pb);
+  const dAt=ts=>new Date(ts*1000).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'});
+  const dKey=ts=>{const d=new Date(ts*1000); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+  let ei=-1; T.forEach((ts,i)=>{ if(dKey(ts)<=edDate()) ei=i; });
+  // где нашли сигнал — розовая полоса
+  let fi=-1; if(v.fs) T.forEach((ts,i)=>{ if(fi<0 && dKey(ts)>=v.fs) fi=i; });
+  // подписи: максимум, минимумы/пики, которые заметно отличаются, + точка выпуска
+  const lab=new Set(); const iMax=vals.indexOf(Math.max(...vals)); lab.add(iMax);
+  for(let i=1;i<n-1;i++){ const a=vals[i-1], b=vals[i], c=vals[i+1];
+    if((b>a&&b>c&&b>=top*0.25)||(b<a&&b<c&&a-b>=top*0.12)) lab.add(i); }
+  const labels=[...lab].filter(i=>i!==ei).sort((x,y)=>vals[y]-vals[x]).slice(0,3);
+  const pts=vals.map((val,i)=>`${X(i).toFixed(1)},${Y(val).toFixed(1)}`);
+  const grid=[0,0.5,1].map(f=>`<line x1="${pl}" x2="${W-pr}" y1="${Y(top*f)}" y2="${Y(top*f)}" stroke="#2b2d33" ${f?'stroke-dasharray="2 3"':''}/>
+    <text x="${pl-5}" y="${Y(top*f)+3}" fill="#61656e" font-size="9" text-anchor="end">${u(top*f)}</text>`).join('');
+  const tx=i=>Math.min(Math.max(X(i),pl+12),W-pr-12);
+  const xl=[0, n>2?Math.floor((n-1)/2):-1, n-1].filter((i,j,a)=>i>=0&&a.indexOf(i)===j);
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="height:auto;aspect-ratio:${W}/${H}">
+    <text x="${pl}" y="11" fill="#61656e" font-size="9">${k?'тыс. VPH':'VPH'}</text>
+    ${fi>=0?`<rect x="${X(fi)-8}" y="${pt-8}" width="16" height="${H-pt-pb+8}" fill="rgba(236,111,159,.20)"/>`:''}
+    ${grid}
+    ${n>1?`<polygon points="${X(0)},${Y(0)} ${pts.join(' ')} ${X(n-1)},${Y(0)}" fill="rgba(139,214,107,.16)"/>
+    <polyline points="${pts.join(' ')}" fill="none" stroke="#b9e05a" stroke-width="2" stroke-linejoin="round"/>`:''}
+    ${ei>=0?`<line x1="${X(ei)}" x2="${X(ei)}" y1="${Y(vals[ei])}" y2="${Y(0)}" stroke="#b9e05a" stroke-dasharray="2 2" opacity=".7"/>`:''}
+    ${labels.map(i=>`<circle cx="${X(i)}" cy="${Y(vals[i])}" r="3.4" fill="#101114" stroke="#b9e05a" stroke-width="1.8"/>
+      <text x="${tx(i)}" y="${Y(vals[i])+(vals[i]<top*0.35&&i!==iMax?14:-8)}" fill="#eceef2" font-size="10" text-anchor="middle">${fmt(vals[i])}</text>`).join('')}
+    ${ei>=0?`<circle cx="${X(ei)}" cy="${Y(vals[ei])}" r="4" fill="#101114" stroke="#eceef2" stroke-width="2"/>`:''}
+    ${xl.map(i=>`<text x="${i===0?pl:i===n-1?W-pr:X(i)}" y="${H-6}" fill="#61656e" font-size="9" text-anchor="${i===0?'start':i===n-1?'end':'middle'}">${dAt(T[i])}${i===ei?' · выпуск':''}</text>`).join('')}
+  </svg>
+  <div style="text-align:right;font-weight:700;font-size:15px;margin-top:2px">${ei>=0?fmt(vals[ei]):'—'} <span class="small mut" style="font-weight:400">VPH</span></div>
+  ${n===1?'<div class="small dim">пока 1 промежуток между замерами — линия появится со следующим</div>':''}`;
+}
+
+// ---------- карточка
+function trendBadge(m){ if(!m.tr) return '';
+  return m.tr==='up'?`<span class="bdg up" title="сейчас быстрее, чем в среднем за жизнь видео">↗ Разгоняется ×${m.tx}</span>`
+    : m.tr==='down'?`<span class="bdg down" title="сейчас медленнее, чем в среднем за жизнь видео">↘ Затухает ×${m.tx}</span>`
+    : `<span class="bdg flat">→ Стабильно ×${m.tx}</span>`; }
+function reasons(r){ return trendBadge(M(r))+(r.a?'<span class="bdg a">Активация</span>':'')+(r.e?'<span class="bdg e">Превышение</span>':'')+(r.g?'<span class="bdg g">Вечнозелёное</span>':'')+(isNew(r)?'<span class="bdg new">Новый сигнал</span>':''); }
+function card(r,i){
+  const v=V[r.id], m=M(r), age=Math.max(0,Math.round((Date.parse(edDate()||Date.now())/1000 - v.pub)/86400));
+  const grow = m.base!=null ? m.vph-m.base : null;
+  const mk = langsFor(v).map(l=>{const x=(v.m||{})[l]; const st=x?x.st:'none';
+    return `<div class="kv mk" data-mk="${r.id}" data-l="${l}"><span>${l.toUpperCase()}</span><b class="st-${st}"><span class="dot"></span>${x?ST[st]:'не проверено'}</b><span class="dim">${x?(x.res||[]).filter(z=>!z.same&&z.sim>=0.35).length+' пох.':''}</span></div>`;}).join('');
+  const why = r.a&&r.e?'Активация + превышение':r.a?'Активация':r.e?'Превышение':r.g?'Вечнозелёное':'Топ по VPH';
+  return `<div class="card">
+   <div>
+    <div class="top">
+      <div class="rank">#<b>${i+1}</b>${fmtK(m.vph)}<br>VPH${v.now&&S.mode==='ed'&&v.now.vph>r.vph*1.05?`<div class="up">↑ ${fmtK(v.now.vph)}</div>`:''}</div>
+      <a href="https://youtu.be/${r.id}" target="_blank" rel="noopener"><img class="thumb" loading="lazy" src="https://i.ytimg.com/vi/${r.id}/mqdefault.jpg" alt="" onerror="this.removeAttribute('src')"></a>
+      <div>
+        <a class="title" href="https://youtu.be/${r.id}" target="_blank" rel="noopener">${esc(v.tr||v.t)}</a>
+        ${v.tr?`<div class="orig">${esc(v.t)}</div>`:''}
+        <div class="meta"><a class="chn" href="https://www.youtube.com/channel/${v.cid}" target="_blank" rel="noopener">${esc(v.ch)}</a>
+          <span>· ${LN[v.lang]||(v.lang||'—').toUpperCase()}</span><span>· ${age} дн.</span><span>· ${dstr(v.pub)}</span><span>· ${v.dur} мин</span>
+          ${v.face===1?'<span>· 🙂 лицо</span>':''}</div>
+        <div class="meta">${reasons(r)}${v.cats.map(c=>`<span class="bdg">${esc(DATA.cats[c])}</span>`).join('')}${v.fs&&isSig(r)?`<span class="dim">сигнал с ${dRu(v.fs)}</span>`:''}</div>
+      </div>
+    </div>
+    <div class="blocks">
+      <div class="blk"><h4><span>Конкуренция по языкам</span><span class="mk dim" data-mk="${r.id}">›</span></h4>${mk}</div>
+      <div class="blk"><h4>Канал и видео</h4>
+        <div class="kv"><span>Подписчики канала</span><b>${fmt(v.subs)}</b></div>
+        <div class="kv"><span>Просмотры видео</span><b>${fmt(m.views)}</b></div>
+        <div class="kv"><span>Просмотры / подписчики</span><b>${v.subs?'×'+(m.views/v.subs).toFixed(2):'—'}</b></div>
+        <div class="kv"><span>vs медиана канала</span><b class="${m.ex>=1?'pos':''}">${m.ex==null?'—':'×'+m.ex}</b></div></div>
+      <div class="blk"><h4 class="g">Просмотры/час · ${S.mode==='ed'?'на момент выпуска':'сейчас'}</h4>
+        <div class="kv"><span>Темп</span><b>${fmt(m.vph)}${m.est?' *':''}</b></div>
+        <div class="kv"><span>${m.bs==='life'?'Средний за жизнь':'Обычный темп'}</span><b>${fmt(m.base)}</b></div>
+        <div class="kv"><span>Прирост</span><b class="${grow>0?'pos':grow<0?'neg':''}">${grow==null?'—':(grow>0?'+':'')+fmt(grow)}</b></div>
+        <div class="kv"><span>Рост в разах</span><b class="${m.gx>=1?'pos':''}">${m.gx==null?'—':'×'+m.gx}</b></div>
+        ${m.est?'<div class="small dim" style="margin-top:4px">* средний за всю жизнь видео, точный — после 2-го замера</div>':''}</div>
+    </div>
+   </div>
+   <div class="chart"><span class="reason">${why}</span>
+     <button class="like ${likes.has(r.id)?'on':''}" data-like="${r.id}" title="В понравившиеся">${likes.has(r.id)?'♥':'♡'}</button>
+     <div class="hd"><span>Просмотры/час · на момент выпуска</span><span>${v.s?v.s.v.length+' зам.':''}</span></div>${chart(v,r)}</div>
+  </div>`;
+}
+function cover(r){
+  const v=V[r.id], m=M(r);
+  return `<div class="cov"><a href="https://youtu.be/${r.id}" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/${r.id}/mqdefault.jpg" alt="" onerror="this.removeAttribute('src')"></a>
+    <span class="vph">${fmtK(m.vph)} VPH</span><button class="like ${likes.has(r.id)?'on':''}" data-like="${r.id}">${likes.has(r.id)?'♥':'♡'}</button>
+    <div class="ct"><div>${esc(v.tr||v.t)}</div><div class="dim" style="margin-top:4px">${esc(v.ch)} · ${fmt(m.views)} просм.</div></div></div>`;
+}
+
+// ---------- каналы
+let chSort={k:'views_d7',dir:-1};
+function renderChannels(){
+  const cols=[['title','Канал'],['subs','Подписчики'],['subs_d7','Подп. за 7 дн.'],['views_d1','Просм. за сутки'],['views_d7','Просм. за 7 дн.'],
+              ['niche_videos','Видео'],['activations','Актив.'],['exceedances','Превыш.'],['max_vph','Макс. VPH'],['d','Динамика']];
+  const q=S.q;
+  const c=DATA.channels.filter(r=>!q||(r.title||'').toLowerCase().includes(q)).sort((a,b)=>{const x=a[chSort.k],y=b[chSort.k];
+    return typeof x==='string'?chSort.dir*x.localeCompare(y):chSort.dir*((x??-1e18)-(y??-1e18));});
+  const sg=n=>n==null?'—':`<span class="${n>0?'pos':''}">${n>0?'+':''}${fmt(n)}</span>`;
+  const sp=d=>{ if(!d||d.length<2) return '<span class="dim small">мало данных</span>';
+    const max=Math.max(...d,1), p=d.map((x,i)=>`${(i*120/(d.length-1)).toFixed(1)},${(30-x/max*26).toFixed(1)}`).join(' ');
+    return `<svg width="120" height="32" viewBox="0 0 120 32"><polyline points="${p}" fill="none" stroke="#8bd66b" stroke-width="1.5"/></svg>`;};
+  $('found').textContent=`Каналов: ${c.length} · нажмите на заголовок столбца для сортировки`;
+  $('list').innerHTML=`<div class="tblwrap"><table><tr>${cols.map(([k,l])=>`<th data-k="${k}">${l}${chSort.k===k?(chSort.dir<0?' ↓':' ↑'):''}</th>`).join('')}</tr>
+   ${c.map(r=>`<tr><td><a href="https://www.youtube.com/channel/${r.id}" target="_blank" rel="noopener">${esc(r.title)}</a><div class="small dim">${esc(r.handle||'')}${r.country?' · '+r.country:''}</div></td>
+     <td>${fmt(r.subs)}</td><td>${sg(r.subs_d7)}</td><td>${sg(r.views_d1)}</td><td>${sg(r.views_d7)}</td><td>${r.niche_videos}</td>
+     <td>${r.activations||''}</td><td>${r.exceedances||''}</td><td>${fmt(r.max_vph)}</td><td>${sp(r.daily)}</td></tr>`).join('')}</table></div>`;
+  $('list').querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k; if(k==='d')return; chSort=chSort.k===k?{k,dir:-chSort.dir}:{k,dir:-1}; renderChannels();});
+  $('more').style.display='none';
+}
+
+// ---------- модальное окно «Рынки и конкуренция»
+let mkSort='sim';
+function openMarket(id, lang){
+  const v=V[id], r=edRows().find(x=>x.id===id)||{}, m=M(r); const ls=langsFor(v); lang=lang||ls[0];
+  const x=(v.m||{})[lang];
+  const tabs=ls.map(l=>{const y=(v.m||{})[l], st=y?y.st:'none';
+    return `<button class="mtab ${l===lang?'on':''}" data-l="${l}"><b>${LN[l]||l}</b><span class="st-${st} small"><span class="dot"></span>${y?ST[st]:'не проверено'}</span></button>`;}).join('');
+  let body;
+  if(!x){ body=`<div class="empty">Рынок ещё не проверен — программа проверяет по ${'несколько'} самых сильных сигналов в день.<br><br>
+      <a class="btn" href="${ytSearch(v.tr||v.t)}" target="_blank" rel="noopener">Поискать вручную на YouTube ↗</a></div>`; }
+  else {
+    const res=(x.res||[]).slice().sort((a,b)=>mkSort==='pub'?b.pub-a.pub:(b[mkSort]??0)-(a[mkSort]??0));
+    const hd=(k,l)=>`<span class="num x" data-s="${k}">${l}${mkSort===k?' ↓':''}</span>`;
+    body=`<div class="small mut">${lang===v.lang?'Ищем похожие названия на своём языке':'Сравниваем названия'} · ${LN[lang]||lang}</div><div style="margin:4px 0 14px">${esc(x.q)}</div>
+     <div class="small mut" style="display:flex;justify-content:space-between"><span>Исходный ролик и ${res.length} похожих публикаций${res.some(z=>z.same)?` (из них с того же канала: ${res.filter(z=>z.same).length})`:''}</span><span>Сходство — по убыванию</span></div>
+     <div class="mrow mhead"><span>Видео и канал</span>${hd('sim','Сходство')}<span class="num hide-s x" data-s="pub">Дата выхода${mkSort==='pub'?' ↓':''}</span>${hd('views','Просмотры')}<span class="num hide-s x" data-s="vph">VPH${mkSort==='vph'?' ↓':''}</span></div>
+     <div class="mrow src"><div><span class="reason">Исходный ролик</span><div><b>${esc(v.tr||v.t)}</b></div>${v.tr?`<div class="small mut">${esc(v.t)}</div>`:''}<div class="small">${esc(v.ch)}</div></div>
+       <span class="num"><b>100%</b></span><span class="num hide-s">${dstr(v.pub)}</span><span class="num">${fmt(m.views)}</span><span class="num hide-s">${fmt(m.vph)}</span></div>
+     ${res.map(z=>`<div class="mrow" ${z.same?'style="opacity:.6"':''}><div><a href="https://youtu.be/${z.id}" target="_blank" rel="noopener">${esc(z.t)}</a><div class="small mut">${esc(z.ch)}${z.same?' <span class="bdg">тот же канал — не учитывается</span>':''}</div></div>
+       <span class="num ${z.same?'dim':z.sim>=0.6?'st-busy':z.sim>=0.35?'st-partial':''}">${Math.round(z.sim*100)}%</span><span class="num hide-s">${dstr(z.pub)}</span><span class="num">${fmt(z.views)}</span><span class="num hide-s">${fmt(z.vph)}</span></div>`).join('')
+       || '<div class="empty">Похожих видео не найдено — рынок свободен</div>'}`;
+  }
+  $('mbox').innerHTML=`<div class="row" style="justify-content:space-between"><h2>Рынки и конкуренция</h2><span class="x" id="mclose" style="font-size:22px">×</span></div>
+    <div class="mtabs">${tabs}</div>${body}
+    <div class="row" style="justify-content:space-between;margin-top:16px"><div class="small mut">${x?'Конкуренты проверены '+x.chk+'<br>':''}Сходство — совпадение слов, не оценка содержания. Ролики того же канала в статусе не учитываются. VPH конкурентов — средний за жизнь видео.</div>
+    <a class="btn" href="${ytSearch(x?x.q:(v.tr||v.t))}" target="_blank" rel="noopener">Проверить YouTube ↗</a></div>`;
+  $('modal').classList.add('open');
+  $('mclose').onclick=()=>$('modal').classList.remove('open');
+  $('mbox').querySelectorAll('.mtab').forEach(b=>b.onclick=()=>openMarket(id,b.dataset.l));
+  $('mbox').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{mkSort=b.dataset.s; openMarket(id,lang);});
+}
+$('modal').onclick=e=>{ if(e.target.id==='modal') $('modal').classList.remove('open'); };
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') $('modal').classList.remove('open'); });
+
+// ---------- главный рендер
+function go(keepPage){
+  if(!keepPage) S.page=1;
+  $('likesBtn').classList.toggle('on',S.likes); $('likesBtn').textContent=(S.likes?'♥':'♡')+' Понравившиеся'+(likes.size?` · ${likes.size}`:'');
+  $('covBtn').classList.toggle('on',S.view==='cov'); $('chBtn').classList.toggle('on',S.tab==='ch');
+  document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode));
+  $('catsSel').textContent = S.cats.size ? [...S.cats].map(c=>DATA.cats[c]).join(', ') : 'Все темы';
+  $('catChips').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',S.cats.has(+c.dataset.c)));
+  renderStats(); renderActive();
+  if(S.tab==='ch'){ renderChannels(); return; }
+  const rows=sorted(edRows().filter(r=>passes(r)));
+  const shown=rows.slice(0,S.page*PAGE);
+  $('found').textContent = `Найдено: ${rows.length}` + (rows.length?` · Показаны 1–${shown.length}`:'');
+  if(!EDS.length){ $('list').innerHTML='<div class="empty">Пока нет данных — запустите update.</div>'; $('more').style.display='none'; return; }
+  $('list').innerHTML = !rows.length ? '<div class="empty">Нет видео по этим фильтрам</div>'
+    : S.view==='cov' ? `<div class="grid">${shown.map(cover).join('')}</div>` : shown.map(card).join('');
+  $('more').style.display = rows.length>shown.length ? 'block':'none';
+  $('list').querySelectorAll('[data-like]').forEach(b=>b.onclick=e=>{e.preventDefault(); const id=b.dataset.like;
+    likes.has(id)?likes.delete(id):likes.add(id); saveLikes(); go(true);});
+  $('list').querySelectorAll('[data-mk]').forEach(b=>b.onclick=()=>openMarket(b.dataset.mk,b.dataset.l));
+}
+
+// ---------- обработчики
+$('ed').onchange=e=>{S.ed=+e.target.value; go();};
+$('q').oninput=e=>{S.q=e.target.value.trim().toLowerCase(); go();};
+$('likesBtn').onclick=()=>{S.likes=!S.likes; go();};
+$('covBtn').onclick=()=>{S.view=S.view==='cov'?'list':'cov'; S.tab='sig'; go();};
+$('chBtn').onclick=()=>{S.tab=S.tab==='ch'?'sig':'ch'; go();};
+$('helpBtn').onclick=()=>$('help').classList.toggle('open');
+$('catsHead').onclick=()=>$('cats').classList.toggle('open');
+$('catChips').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{const i=+c.dataset.c; S.cats.has(i)?S.cats.delete(i):S.cats.add(i); go();});
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.m; go();});
+[['f_face','face'],['f_mk','mk'],['f_why','why'],['f_when','when'],['f_lang','lang'],['f_tr','tr'],['f_sort','sort']].forEach(([id,k])=>$(id).onchange=e=>{S[k]=e.target.value; go();});
+$('more').onclick=()=>{S.page++; go(true);};
+go();
+</script>
+</body>
+</html>
