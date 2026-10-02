@@ -6,10 +6,12 @@ def make_detector():
     try:
         import cv2
         import numpy as np
-    except ImportError:
+        front = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+        profile = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_profileface.xml")
+        if front.empty():
+            return None
+    except Exception:          # нет пакета или несовместимая версия — просто пропускаем шаг
         return None
-    front = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    profile = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_profileface.xml")
 
     def detect(video_id):
         url = f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"
@@ -18,7 +20,10 @@ def make_detector():
                 data = r.read()
         except Exception:
             return None
-        img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_GRAYSCALE)
+        try:
+            img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_GRAYSCALE)
+        except Exception:
+            return None
         if img is None:
             return None
         h = img.shape[0]
